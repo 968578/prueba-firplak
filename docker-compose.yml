@@ -1,0 +1,27 @@
+services:
+  mysql1:
+    image: mysql:8.0.39
+    restart: always
+    env_file: "./api/.env"
+    environment:
+      - MYSQL_DATABASE= ${MYSQL_DATABASE}
+      - MYSQL_USER= ${MYSQL_USER}
+      - MYSQL_PASSWORD= ${MYSQL_PASSWORD}
+    ports:
+      - 3307:3306
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
+  api:
+    build: ./api
+    environment:
+      DB_HOST: mysql1
+    depends_on:
+      - mysql1
+    ports:
+      - "5001:5001"
+    env_file:
+      - ./api/.env
+
+volumes:
+  mysql-data:
